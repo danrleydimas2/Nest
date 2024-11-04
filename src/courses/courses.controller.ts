@@ -1,5 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Res } from '@nestjs/common';
 import { CoursesService } from './courses.service';
+import { CreateCourseDTO } from './dto/create-course.dto';
+import { UpdateCourseDTO } from './dto/update-course.dto';
 
 
 @Controller('courses')
@@ -40,8 +42,8 @@ export class CoursesController {
     // alterando o status code das respotas
     @HttpCode(204) //204 retorna nada que é bom para quando é uma rota para excluir
     @Post()
-    create(@Body() body) {
-        return this.courseService.create(body);
+    create(@Body() CreateCourseDTO: CreateCourseDTO) {
+        return this.courseService.create(CreateCourseDTO);
     }
 
 
@@ -55,13 +57,13 @@ export class CoursesController {
     }
 
     @Put(':id')
-    updatePut (@Param ('id') id: number, @Body() body){
-        return this.courseService.update(+id,body)
+    updatePut (@Param ('id') id: number, @Body() updateCourseDTO: UpdateCourseDTO){
+        return this.courseService.update(id,updateCourseDTO)
     }
 
     @HttpCode(HttpStatus.NO_CONTENT) //204 retorna nada que é bom para quando é uma rota para excluir
     @Delete(':id')
     remove(@Param('id') id: number){
-        return this.courseService.remove(+id)
+        return this.courseService.remove(id)
     }
 }
