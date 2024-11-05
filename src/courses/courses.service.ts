@@ -1,51 +1,54 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Course } from './courses.entity';
+import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Course } from './entities/courses.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+
 
 @Injectable()
 export class CoursesService {
-    //readonly apenas leitura
-    private readonly courses: Course[] = [
-        {
-            id: 1,
-            name: 'NEstJs',
-            description: 'Curoso sobre fundamentos do framework NestJs',
-            tags: ['node.js', 'nestjs']
-        }
-    ]
+    constructor(
+        @InjectRepository(Course)
+        private readonly courseRepository: Repository<Course>
+    ) { }
 
-    findAll() {
-        return this.courses
+
+    async findAll() {
+        return await this.courseRepository.find()
     }
 
-    findOne(id: number) {
-        const course =  this.courses.find(course => course.id === id)
-        if(!course){
+    async findOne(id: number) {
+        const course = await this.courseRepository.findOne({
+            where: { id }
+        })
+        if (!course) {
             throw new HttpException(`Course ID ${id} not found`, HttpStatus.NOT_FOUND)
         }
         return course
     }
 
-    create(createCourseDTO: any) {
-        this.courses.push(createCourseDTO)
-        return createCourseDTO
+    async create(createCourseDTO: any) {
+        const course = this.courseRepository.create(createCourseDTO) // nao é uma promise por isso nao precisa de await
+        return this.courseRepository.save(course)
     }
 
-    update(id: number, updateCourseDTO: any) {
-        const existingCourse = this.findOne(id)
-
-        if (existingCourse) {
-            const index = this.courses.findIndex(course => course.id === id)
-            this.courses[index] = {
-                id,
-                ...updateCourseDTO
-            }
+    async update(id: number, updateCourseDTO: any) {
+        const course = await this.courseRepository.preload({
+            ...updateCourseDTO,
+            id
+        }) //preload ele ja faz a  busca e cria o objt
+        if (!course) {
+            throw new HttpException(`Course ID ${id} not found`, HttpStatus.NOT_FOUND)
         }
+        return this.courseRepository.save(course)
     }
 
-    remove(id: number) {
-        const index = this.courses.findIndex(course => course.id === id)
-        if(index > 0){
-            this.courses.splice(index,1)
+    async remove(id: number) {
+        const course = await this.courseRepository.findOne({
+            where: { id },
+        })
+        if (!course) {
+            throw new NotFoundException(`Course ID ${id} not found`)
         }
+        return this.courseRepository.remove(course)
     }
 }
