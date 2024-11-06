@@ -51,9 +51,8 @@ export class CoursesController {
     //put para atualizar um conjuto de dados
     //patch para atualizar uma propriedade
     @Patch(':id')
-    update(@Param('id') id: string, @Body() body) {
-        console.log(body)
-        return `Update course with ID ${id}`
+    update(@Param('id') id: number, @Body() updateCourseDTO: UpdateCourseDTO) {
+        return this.courseService.update(id,updateCourseDTO)
     }
 
     @Put(':id')
