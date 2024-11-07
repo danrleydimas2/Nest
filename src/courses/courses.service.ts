@@ -10,25 +10,25 @@ import { Console } from 'console';
 
 @Injectable()
 export class CoursesService {
-    constructor(
-        @InjectRepository(Course)
-        private readonly courseRepository: Repository<Course>,
 
-        @InjectRepository(Tag)
-        private readonly tagRepository:Repository<Tag>
-    ) { }
+    @InjectRepository(Course)
+    private readonly courseRepository: Repository<Course>
+
+    @InjectRepository(Tag)
+    private readonly tagRepository: Repository<Tag>
+
 
 
     async findAll() {
         return await this.courseRepository.find({
-            relations:['tags'] //para trazer os dados de outra tabela com relação
+            relations: ['tags'] //para trazer os dados de outra tabela com relação
         })
     }
 
     async findOne(id: string) {
         const course = await this.courseRepository.findOne({
             where: { id },
-            relations:['tags'] 
+            relations: ['tags']
         })
         if (!course) {
             throw new HttpException(`Course ID ${id} not found`, HttpStatus.NOT_FOUND)
@@ -48,15 +48,15 @@ export class CoursesService {
     }
 
     async update(id: string, updateCourseDTO: UpdateCourseDTO) {
-        const tags = updateCourseDTO.tags && (await Promise.all(updateCourseDTO.tags.map(name=> this.preloadTagByname(name))))
+        const tags = updateCourseDTO.tags && (await Promise.all(updateCourseDTO.tags.map(name => this.preloadTagByname(name))))
 
-        const course =  await this.courseRepository.preload({
+        const course = await this.courseRepository.preload({
             ...updateCourseDTO,
             id,
             tags
         })
         console.log(course)
-         //preload ele ja faz a  busca e cria o objt
+        //preload ele ja faz a  busca e cria o objt
         if (!course) {
             throw new HttpException(`Course ID ${id} not found`, HttpStatus.NOT_FOUND)
         }
@@ -73,11 +73,11 @@ export class CoursesService {
         return this.courseRepository.remove(course)
     }
 
-    private async preloadTagByname(name:string) :Promise <Tag>{
-        const tag = await this.tagRepository.findOne({where:{name}})
-        if(tag){
+    private async preloadTagByname(name: string): Promise<Tag> {
+        const tag = await this.tagRepository.findOne({ where: { name } })
+        if (tag) {
             return tag
         }
-        return this.tagRepository.create({name})
+        return this.tagRepository.create({ name })
     }
 }
