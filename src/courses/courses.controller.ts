@@ -23,8 +23,8 @@ export class CoursesController {
 
 
     @Get(':id')
-    findOne(@Param('id') id: number) {
-        return this.courseService.findOne(+id)
+    findOne(@Param('id') id: string) {
+        return this.courseService.findOne(id)
     }
     // pegar dois parametros na rota
     @Get(':id/:name')
@@ -51,18 +51,18 @@ export class CoursesController {
     //put para atualizar um conjuto de dados
     //patch para atualizar uma propriedade
     @Patch(':id')
-    update(@Param('id') id: number, @Body() updateCourseDTO: UpdateCourseDTO) {
+    update(@Param('id') id: string, @Body() updateCourseDTO: UpdateCourseDTO) {
         return this.courseService.update(id,updateCourseDTO)
     }
 
     @Put(':id')
-    updatePut (@Param ('id') id: number, @Body() updateCourseDTO: UpdateCourseDTO){
+    updatePut (@Param ('id') id: string, @Body() updateCourseDTO: UpdateCourseDTO){
         return this.courseService.update(id,updateCourseDTO)
     }
 
     @HttpCode(HttpStatus.NO_CONTENT) //204 retorna nada que é bom para quando é uma rota para excluir
     @Delete(':id')
-    remove(@Param('id') id: number){
+    remove(@Param('id') id: string){
         return this.courseService.remove(id)
     }
 }
