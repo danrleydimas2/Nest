@@ -40,7 +40,7 @@ export class CoursesController {
 
     //trabalhando com method que trata dado pelo corpo da requisição
     // alterando o status code das respotas
-    @HttpCode(204) //204 retorna nada que é bom para quando é uma rota para excluir
+    @HttpCode(201) //204 retorna nada que é bom para quando é uma rota para excluir
     @Post()
     create(@Body() CreateCourseDTO: CreateCourseDTO) {
         return this.courseService.create(CreateCourseDTO);

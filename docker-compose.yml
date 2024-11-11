@@ -14,3 +14,15 @@ services:
       - MYSQL_DATABASE=devtraining
       - MYSQL_ROOT_PASSWORD=docker
     hostname: danrley
+
+  dbtest:
+    image: mysql:8.0
+    build: .
+    container_name: test-db
+    restart: always
+    ports:
+      - 5433:3306
+    environment:
+      - MYSQL_DATABASE=devtraining
+      - MYSQL_ROOT_PASSWORD=docker
+    hostname: danrley
